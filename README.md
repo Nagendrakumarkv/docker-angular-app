@@ -57,3 +57,73 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Docker Desktop
+
+Download from: https://www.docker.com/products/docker-desktop/
+
+Once installed, run:
+
+docker --version
+
+## Dockerize the Angular App
+
+Angular must be built, then served using Nginx in Docker.
+
+Create a Dockerfile in the project root:
+
+Create:
+
+Dockerfile
+----------
+
+# Step 1: Build Angular App
+FROM node:18 AS build
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build --prod
+
+# Step 2: Run web server (Nginx)
+FROM nginx:alpine
+COPY --from=build /app/dist/hello-world-app /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+## Build the Docker Image
+
+docker build -t angular-hello-world .
+
+This creates an image named angular-hello-world.
+
+## Docker images list
+
+docker images
+
+## Run the Docker Container
+
+docker run -p 8080:80 angular-hello-world
+
+Now open your browser:
+
+👉 http://localhost:8080
+
+You will see:
+
+💥 Hello World from Angular! 💥
+
+🎉 DONE!
+
+You have:
+
+✔ Created Angular project
+✔ Printed Hello World
+✔ Built using Docker
+✔ Served via Nginx
+✔ Viewed in browser using container
